@@ -48,11 +48,11 @@ export LD_LIBRARY_PATH=$PWD/../lib
 
 降噪前：
 
-![降噪前](.\before.png "降噪前波形")
+![降噪前](before.png "降噪前波形")
 
 降噪后：
 
-![降噪后](.\after.png "降噪后波形")
+![降噪后](after.png "降噪后波形")
 
 ### API使用说明
 
