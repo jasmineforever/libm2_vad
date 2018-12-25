@@ -1,0 +1,11 @@
+project(m2NoiseReducer)
+file(GLOB_RECURSE ALL_CODE_FILES PROJECT_SOURCE_DIR *.c | *.cpp)
+foreach(loop_var IN LISTS ALL_CODE_FILES)
+	message(${loop_var})
+endforeach(loop_var)
+
+include_directories(${CMAKE_SOURCE_DIR}/output/include)
+link_directories(${CMAKE_SOURCE_DIR}/output/lib)
+add_executable(${PROJECT_NAME} ${ALL_CODE_FILES})
+target_link_libraries(${PROJECT_NAME} m2vad m)
+install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_SOURCE_DIR}/output/bin)
