@@ -181,8 +181,10 @@ int main(int argc, char* argv[])
     //由于检测到声音的起点的时候，已经过了一小段检测时间，所以需要
     //回溯一定的数据才能保证截取到的时完整的音频文件
     int sb_frames = (((300 + 200) * ((int)inputWavHeader.nSamplesPerSec / 1000) * 2) / MAX_FRAME_SIZE); //起点需要回溯的音频帧数,留有余地
+    int eb_frames = ((900 * ((int)inputWavHeader.nSamplesPerSec / 1000) * 2) / MAX_FRAME_SIZE); //尾点需要回溯的音频帧数
 
     int real_start_index = 0;
+    int real_end_index = 0;
 
     for(int i = 0; i < audio_stream_size; i++)
     {
@@ -208,8 +210,18 @@ int main(int argc, char* argv[])
             }
             else if(res == M2_VAD_END_POINT_DETECTED)
             {
+                if(i - eb_frames > real_start_index)
+                {
+                    real_end_index = i - eb_frames;
+                }
+                else
+                {
+                    printf("err in cult end point\n");
+                    exit(1);
+                }
 
-                if(i >= real_start_index)
+
+                if(real_end_index > real_start_index)
                 {
                     sprintf((char*)temp, "%s/%d.wav", outputFolder, new_file_index);
                     fp = fopen(temp, "wb+");
@@ -220,7 +232,7 @@ int main(int argc, char* argv[])
                     }
                     fwrite(g_empty_wav_header, 1, 44, fp);
                     int writeSize = 0;
-                    for(int j = real_start_index; j <= i; j ++)
+                    for(int j = real_start_index; j <= real_end_index; j ++)
                     {
                         if(audio_stream[j].frameSize != fwrite(audio_stream[j].frameData, 1, audio_stream[j].frameSize, fp))
                         {
