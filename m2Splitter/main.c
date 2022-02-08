@@ -185,7 +185,8 @@ int main(int argc, char* argv[])
 
     int real_start_index = 0;
     int real_end_index = 0;
-
+    int max_file_size = 0;
+    int max_file_size_index = 0;
     for(int i = 0; i < audio_stream_size; i++)
     {
         if(audio_stream[i].frameData)
@@ -223,7 +224,7 @@ int main(int argc, char* argv[])
 
                 if(real_end_index > real_start_index)
                 {
-                    sprintf((char*)temp, "%s/%d.wav", outputFolder, new_file_index);
+                    sprintf((char*)temp, "%s/000_nohash_%d.wav", outputFolder, new_file_index);
                     fp = fopen(temp, "wb+");
                     if(!fp)
                     {
@@ -240,6 +241,11 @@ int main(int argc, char* argv[])
                             break;
                         }
                         writeSize += audio_stream[j].frameSize;
+                    }
+                    if(writeSize > max_file_size)
+                    {
+                        max_file_size = writeSize;
+                        max_file_size_index = new_file_index;
                     }
                     WAVEHEADFMT newWavHeader;
                     PrepareWaveHead(&newWavHeader, 1, inputWavHeader.nSamplesPerSec, 16, writeSize);
@@ -268,5 +274,6 @@ int main(int argc, char* argv[])
     }
     free(audio_stream);
     printf("Finished, split out %d files to \"%s\"\n", new_file_index - 1, outputFolder);
+    printf("max audio file index:%d, time:%.3f\n", max_file_size_index, (double)max_file_size / 16000.00);
     return 0;
 }
